@@ -1,5 +1,6 @@
 package cf.awidiyadew.rxgalerryupload;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,13 +29,14 @@ public class MainActivity extends AppCompatActivity implements OnPreparedListene
     private static final int REQUEST_MEDIA = 100;
     private MediaItem mMediaItem;
     private EMVideoView emVideoView;
+    private ProgressDialog mProgresDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        setupVideoView();
+        emVideoView = (EMVideoView)findViewById(R.id.video_view);
 
         findViewById(R.id.btn_video).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,14 +54,26 @@ public class MainActivity extends AppCompatActivity implements OnPreparedListene
 
     }
 
-    private void setupVideoView() {
-        emVideoView = (EMVideoView)findViewById(R.id.video_view);
+    private void setupVideoView(String url) {
         emVideoView.setOnPreparedListener(this);
+        emVideoView.setVideoURI(Uri.parse(url));
+        // "https://firebasestorage.googleapis.com/v0/b/teambookmark-31bd3.appspot.com/o/video%2F399205.mp4?alt=media&token=c00612e9-9e8c-4bc1-aecf-4597586c822a"
+    }
 
-        //For now we just picked an arbitrary item to play.  More can be found at
-        //https://archive.org/details/more_animation
-        emVideoView.setVideoURI(Uri.parse("https://firebasestorage.googleapis.com/v0/b/teambookmark-31bd3.appspot.com/o/video%2F399205.mp4?alt=media&token=c00612e9-9e8c-4bc1-aecf-4597586c822a"));
-        emVideoView.showControls();
+    private void showLoading(boolean isShow){
+        if (isShow){
+            if (mProgresDialog == null)
+                mProgresDialog = new ProgressDialog(this);
+
+            mProgresDialog.setMessage("Uploading...");
+            mProgresDialog.setIndeterminate(true);
+            mProgresDialog.setCancelable(false);
+            mProgresDialog.setCanceledOnTouchOutside(false);
+            mProgresDialog.show();
+        } else {
+            if (mProgresDialog.isShowing())
+                mProgresDialog.hide();
+        }
     }
 
     @Override
@@ -90,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements OnPreparedListene
 
     private void startUploadVideo(Uri uri){
 
+        showLoading(true);
+
         FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
 
         StorageReference videoReference = firebaseStorage.getReference().child("video");
@@ -101,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnPreparedListene
             @Override
             public void onFailure(@NonNull Exception exception) {
                 Toast.makeText(MainActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                showLoading(false);
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @SuppressWarnings("VisibleForTests")
@@ -108,7 +125,10 @@ public class MainActivity extends AppCompatActivity implements OnPreparedListene
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // Handle successful uploads on complete
                 Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                Toast.makeText(MainActivity.this, downloadUrl.toString(), Toast.LENGTH_SHORT).show();
+
+                setupVideoView(downloadUrl.toString());
+
+                showLoading(false);
             }
         });
 

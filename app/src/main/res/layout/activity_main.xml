@@ -4,28 +4,27 @@
     android:layout_height="match_parent"
     xmlns:EMVideoView="http://schemas.android.com/apk/res-auto">
 
-    <com.devbrackets.android.exomedia.ui.widget.EMVideoView
+    <Button
+        android:id="@+id/btn_video"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:text="@string/btn_pick_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.devbrackets.android.exomedia.ui.widget.EMVideoView
         android:id="@+id/video_view"
+        android:layout_below="@id/btn_video"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         EMVideoView:useDefaultControls="true"/>
 
-    <Button
-        android:visibility="gone"
+    <!--<Button
         android:id="@+id/btn_picture"
         android:text="@string/btn_pick_image"
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:visibility="gone"
-        android:id="@+id/btn_video"
-        android:layout_below="@id/btn_picture"
-        android:layout_centerInParent="true"
-        android:text="@string/btn_pick_video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />-->
 
 </RelativeLayout>
