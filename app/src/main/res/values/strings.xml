@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RxGalerryUpload</string>
+    <string name="btn_pick_image">Pick Image</string>
+    <string name="btn_pick_video">Pick Video</string>
+</resources>
